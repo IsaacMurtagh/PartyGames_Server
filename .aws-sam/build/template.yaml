@@ -3,34 +3,48 @@ Transform: AWS::Serverless-2016-10-31
 Description: "partygames-app\nServerless REST api for party games \n"
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 2
 Resources:
   GameFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: GameFunction
-      Handler: app.lambdaHandler
+      Handler: app.handler
       Runtime: nodejs14.x
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: Games
+      Environment:
+        Variables:
+          GAMES_TABLE_NAME: Games
       Events:
         getGame:
           Type: Api
           Properties:
-            Path: /game
+            Path: /game/{id}
             Method: get
+        createGame:
+          Type: Api
+          Properties:
+            Path: /game
+            Method: post
+  gamesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Games
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 Outputs:
-  GameApi:
+  Api:
     Description: API Gateway endpoint URL for Prod stage for Game function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/api/game/
-  GameFunction:
-    Description: Game Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - GameFunction
-      - Arn
-  GameFunctionIamRole:
-    Description: Implicit IAM Role created for Game function
-    Value:
-      Fn::GetAtt:
-      - GameFunctionRole
-      - Arn
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/game/

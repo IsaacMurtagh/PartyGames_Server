@@ -1,27 +1,19 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
-let response;
+'use strict';
+require('./dbClient'); // This must be required before handling requests to use the amazon sdk.
 
-/**
- *
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- * @param {Object} context
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
- */
-exports.lambdaHandler = async (event, context) => {
-    try {
-        // const ret = await axios(url);
-        response = {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                event, context
-            })
-        }
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
+async function handle(event, context) {
+  const response = await this.handler(event, context);
+  return { 
+    statusCode: response.statusCode || 200,
+    body: JSON.stringify(response)
+  }
+}
 
-    return response
-};
+exports.handler = async (event, context) => {
+  switch (event.httpMethod) {
+    case 'GET':
+      return await handle.bind(require('./handlers/getGame'))(event, context);
+    case 'POST':
+      return await handle.bind(require('./handlers/createGame'))(event, context);
+  }
+}

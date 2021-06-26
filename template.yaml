@@ -7,32 +7,50 @@ Description: >
   
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 2
 
 Resources:
   GameFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/game
-      Handler: app.lambdaHandler
+      Handler: app.handler
       Runtime: nodejs14.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: Games
+      Environment:
+        Variables:
+          GAMES_TABLE_NAME: Games
       Events:
         getGame:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
+          Properties:
+            Path: /game/{id}
+            Method: get
+        createGame:
+          Type: Api
           Properties:
             Path: /game
-            Method: get
+            Method: post
+  
+  gamesTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: Games
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  GameApi:
+  Api:
     Description: "API Gateway endpoint URL for Prod stage for Game function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/game/"
-  GameFunction:
-    Description: "Game Lambda Function ARN"
-    Value: !GetAtt GameFunction.Arn
-  GameFunctionIamRole:
-    Description: "Implicit IAM Role created for Game function"
-    Value: !GetAtt GameFunctionRole.Arn

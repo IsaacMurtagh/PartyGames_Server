@@ -1,0 +1,17 @@
+version: "3.9"
+
+networks:
+  backend:
+    name: lambda-local
+
+services:
+  dynamo:
+    image: amazon/dynamodb-local
+    networks:
+      - backend
+    ports: [ "8000:8000" ]
+    expose:
+      - "8000"
+    entrypoint: java
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+
