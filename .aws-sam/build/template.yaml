@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "partygames-app\nServerless REST api for party games \n"
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  GameFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GameFunction
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        getGame:
+          Type: Api
+          Properties:
+            Path: /game
+            Method: get
+Outputs:
+  GameApi:
+    Description: API Gateway endpoint URL for Prod stage for Game function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/api/game/
+  GameFunction:
+    Description: Game Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GameFunction
+      - Arn
+  GameFunctionIamRole:
+    Description: Implicit IAM Role created for Game function
+    Value:
+      Fn::GetAtt:
+      - GameFunctionRole
+      - Arn
