@@ -26,6 +26,11 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 
 ## Use the SAM CLI to build and test locally
 
+Run dynamo locally
+```bash
+java -D"java.library.path=~/DynamoDBLocal_lib" -jar ~/Downloads/dynamodb_local_latest/DynamoDBLocal.jar
+```
+
 Build your application with the `sam build` command.
 
 ```bash
@@ -36,18 +41,33 @@ The SAM CLI installs dependencies, creates a deployment package, and saves it in
 
 Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
 
-Run functions locally and invoke them with the `sam local invoke` command.
+## Testing Locally
+
+first run docker-compose up to run dynamoDb
+```bash
+docker-compose up
+```
+
+then run ./init.sh to create all required tables
+```bash
+./init.sh
+```
+
+Then run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-sam local invoke GameFunction --event events/event.json
+sam build && sam local invoke GameFunction --event events/event.json --docker-network lambda-local
 ```
 
 The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
 
 ```bash
-sam local start-api
+sam build && sam local start-api --docker-network lambda-local
 curl http://localhost:3000/health
 ```
+
+The --docker-network command allows the sam api and lambda to talk to docker as they're hosted in separate containers.
+Inside the docker-compose.yaml file, lambda-local is specified as the network for the DB
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
