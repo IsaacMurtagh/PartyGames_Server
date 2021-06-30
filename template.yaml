@@ -26,12 +26,12 @@ Resources:
         getGame:
           Type: Api
           Properties:
-            Path: /game/{id}
+            Path: /games/{id}
             Method: get
         createGame:
           Type: Api
           Properties:
-            Path: /game
+            Path: /games
             Method: post
   
   gamesTable:
