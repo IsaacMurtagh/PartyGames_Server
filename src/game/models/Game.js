@@ -5,10 +5,13 @@ const uuid = require('uuid');
 class Game {
 
   constructor(props) {
+    this.id = props.id;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
-    this.id = props.id;
-    this.createdBy = props.createdBy;
+    this.name = props.name;
+    this.type = props.type;
+    this.allowNicknames = props.allowNicknames;
+    this.maxPlayers = props.maxPlayers;
   }
 
   static fromCreate(props) {
