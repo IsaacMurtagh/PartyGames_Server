@@ -10,6 +10,27 @@ Globals:
     Timeout: 2
 
 Resources:
+  RestApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Party Games Api Gateway
+      StageName: prod
+      Models:
+        Game: 
+          type: object
+          required:
+            - type
+            - allowNicknames
+          properties:
+            type:
+              type: string
+            allowNicknames:
+              type: boolean
+            maxPartitions:
+              type: integer
+            name:
+              type: string
+
   GameFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -23,17 +44,22 @@ Resources:
         Variables:
           GAMES_TABLE_NAME: Games
       Events:
-        getGame:
+        GetGameApi:
           Type: Api
           Properties:
+            RestApiId: { Ref: 'RestApiGateway' }
             Path: /games/{id}
             Method: get
-        createGame:
+        CreateGameApi:
           Type: Api
           Properties:
+            RestApiId: { Ref: 'RestApiGateway' }
             Path: /games
             Method: post
-  
+            RequestModel:
+              Model: Game
+              Required: true
+
   gamesTable:
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -53,4 +79,4 @@ Resources:
 Outputs:
   Api:
     Description: "API Gateway endpoint URL for Prod stage for Game function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/game/"
+    Value: !Sub "https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/games/"
