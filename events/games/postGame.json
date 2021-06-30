@@ -1,0 +1,12 @@
+{
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "path": "/games",
+  "httpMethod": "POST",
+  "body": {
+    "name": "Boss boys",
+    "type": "WouldYouRather",
+    "allowNicknames": true
+  }
+}

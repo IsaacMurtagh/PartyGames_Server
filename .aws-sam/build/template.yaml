@@ -74,4 +74,4 @@ Outputs:
   Api:
     Description: API Gateway endpoint URL for Prod stage for Game function
     Value:
-      Fn::Sub: https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/games/
+      Fn::Sub: https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/games/
