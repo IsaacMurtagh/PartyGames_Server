@@ -2,29 +2,26 @@
 const moment = require('moment');
 const uuid = require('uuid');
 
-class Game {
+class User {
 
   constructor(props) {
     this.id = props.id;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
-    this.name = props.name;
-    this.type = props.type;
-    this.allowNicknames = props.allowNicknames;
-    this.maxPlayers = props.maxPlayers || 5;
+    this.games = props.games;
   }
 
-  static fromCreate(props) {
-    return new Game({
-      ...props,
+  static fromCreate(props = {}) {
+    return new User({
+      id: uuid(),
       createdAt: moment(),
       updatedAt: moment(),
-      id: uuid(),
+      games: [],
     })
   }
 
   static fromDocument(doc) {
-    return new Game({
+    return new User({
       ...doc,
       createdAt: moment(doc.createdAt),
       updatedAt: moment(doc.updatedAt),
@@ -33,9 +30,9 @@ class Game {
 
   toDocument() {
     return {
-      ...this,
-      pk: `Game#${this.id}`,
+      pk: `User#${this.id}`,
       sk: '#UniqueConstraint',
+      games: this.games,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
     }
@@ -50,4 +47,4 @@ class Game {
   }
 }
 
-module.exports = Game;
+module.exports = User;

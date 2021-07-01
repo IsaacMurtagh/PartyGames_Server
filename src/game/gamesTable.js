@@ -1,8 +1,8 @@
 const dynamoDb = require('./dbClient');
-
+const Game = require('./models/game');
 class GamesTable {
   constructor() {
-    this.name = process.env.GAMES_TABLE_NAME;
+    this.name = process.env.GAMES_TABLE_NAME || 'Users';
   }
 
   async createGame(game) {
@@ -18,10 +18,13 @@ class GamesTable {
   async getGameById(id) {
     return dynamoDb.get({
       TableName: this.name,
-      Key: { id }
+      Key: { 
+        pk: `Game#${id}`,
+        sk: '#UniqueConstraint',
+      }
     }).promise()
     .then(result => {
-      return result;
+      return result ? Game.fromDocument(result.Item) : undefined;
     });
   }
 }

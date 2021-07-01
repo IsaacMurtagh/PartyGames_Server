@@ -2,7 +2,8 @@ const gamesTable = require('../gamesTable');
 
 async function getGame(event, context) {
   const { id } = event.pathParameters;
-  return await gamesTable.getGameById(id);
+  const game = await gamesTable.getGameById(id);
+  return game.toApiResponse();
 };
 
 module.exports = {
