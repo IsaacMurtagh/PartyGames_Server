@@ -4,7 +4,21 @@ Description: >
   partygames-app
 
   Serverless REST api for party games 
-  
+
+Parameters:
+  GamesTableParam:
+    Type: String
+    Default: Games
+    AllowedValues:
+      - Games
+    Description: The name of the database table for games
+  UsersTableParam:
+    Type: String
+    Default: Users
+    AllowedValues:
+      - Users
+    Description: The name of the database table for users
+
 Globals:
   Function:
     Timeout: 2
@@ -39,37 +53,97 @@ Resources:
       Runtime: nodejs14.x
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: Games
+            TableName:
+              Ref: GamesTableParam
       Environment:
         Variables:
-          GAMES_TABLE_NAME: Games
+          GAMES_TABLE_NAME:
+              Ref: GamesTableParam
       Events:
         GetGameApi:
           Type: Api
           Properties:
-            RestApiId: { Ref: 'RestApiGateway' }
+            RestApiId: 
+              Ref: 'RestApiGateway'
             Path: /games/{id}
             Method: get
         CreateGameApi:
           Type: Api
           Properties:
-            RestApiId: { Ref: 'RestApiGateway' }
+            RestApiId: 
+              Ref: 'RestApiGateway'
             Path: /games
             Method: post
             RequestModel:
               Model: Game
               Required: true
 
+  UserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/user
+      Handler: app.handler
+      Runtime: nodejs14.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName:
+              Ref: UsersTableParam
+      Environment:
+        Variables:
+          GAMES_TABLE_NAME:
+              Ref: UsersTableParam
+      Events:
+        GetUserApi:
+          Type: Api
+          Properties:
+            RestApiId: 
+              Ref: 'RestApiGateway'
+            Path: /users/{id}
+            Method: get
+        CreateUserApi:
+          Type: Api
+          Properties:
+            RestApiId: 
+              Ref: 'RestApiGateway'
+            Path: /users
+            Method: post
+
   gamesTable:
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName: Games
+      TableName:
+        Ref: GamesTableParam
       AttributeDefinitions: 
-        - AttributeName: id
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
           AttributeType: S
       KeySchema: 
-        - AttributeName: id
+        - AttributeName: pk
           KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName:
+        Ref: UsersTableParam
+      AttributeDefinitions: 
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
@@ -78,5 +152,5 @@ Resources:
 
 Outputs:
   Api:
-    Description: "API Gateway endpoint URL for Prod stage for Game function"
-    Value: !Sub "https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/games/"
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/"

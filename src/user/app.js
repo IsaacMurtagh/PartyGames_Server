@@ -12,8 +12,8 @@ async function handle(event, context) {
 exports.handler = async (event, context) => {
   switch (event.httpMethod) {
     case 'GET':
-      return await handle.bind(require('./handlers/getGame'))(event, context);
+      return await handle.bind(require('./handlers/getUser'))(event, context);
     case 'POST':
-      return await handle.bind(require('./handlers/createGame'))(event, context);
+      return await handle.bind(require('./handlers/createUser'))(event, context);
   }
 }
