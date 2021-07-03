@@ -13,4 +13,4 @@
   --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
   --endpoint-url=http://127.0.0.1:8000
 
-sam build && sam local start-api --docker-network lambda-local --warm-containers EAGER
+sam build && sam local start-api --docker-network lambda-local

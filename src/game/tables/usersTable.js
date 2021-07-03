@@ -1,5 +1,5 @@
-const dynamoDb = require('./dbClient');
-const User = require('./models/User');
+const dynamoDb = require('../dbClient');
+const User = require('../models/User');
 
 class UsersTable {
   constructor() {
