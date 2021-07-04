@@ -1,5 +1,5 @@
-const dynamoDb = require('./dbClient');
-const Game = require('./models/game');
+const dynamoDb = require('../dbClient');
+const Game = require('../models/Game');
 class GamesTable {
   constructor() {
     this.name = process.env.GAMES_TABLE_NAME || 'Users';
@@ -24,9 +24,9 @@ class GamesTable {
       }
     }).promise()
     .then(result => {
-      return result ? Game.fromDocument(result.Item) : undefined;
+      return result.Item ? Game.fromDocument(result.Item) : undefined;
     });
   }
 }
-gamesTable = new GamesTable();
+const gamesTable = new GamesTable();
 module.exports = gamesTable;
