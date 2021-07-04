@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "test": "GAMES_TABLE_NAME=games USERS_TABLE_NAME=users jest"
+  },
+  "devDependencies": {
+    "@shelf/jest-dynamodb": "^1.8.1",
+    "aws-sdk": "^2.939.0",
+    "http-errors": "^1.8.0",
+    "jest": "^27.0.6",
+    "moment": "^2.29.1",
+    "uuid": "^3.3.2"
+  }
+}
