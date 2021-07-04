@@ -32,6 +32,7 @@ class User {
     return {
       pk: `User#${this.id}`,
       sk: '#UniqueConstraint',
+      id: this.id,
       games: this.games,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),

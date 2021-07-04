@@ -3,7 +3,7 @@ const User = require('./models/User');
 
 class UsersTable {
   constructor() {
-    this.name = process.env.USERS_TABLE_NAME || 'Users';
+    this.name = process.env.USERS_TABLE_NAME || 'users';
   }
 
   async createUser(user) {
