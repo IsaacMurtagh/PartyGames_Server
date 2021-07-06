@@ -22,6 +22,13 @@ Parameters:
 Globals:
   Function:
     Timeout: 2
+    Runtime: nodejs14.x
+    Environment:
+      Variables:
+          USERS_TABLE_NAME:
+              Ref: UsersTableParam
+          GAMES_TABLE_NAME:
+              Ref: GamesTableParam
 
 Resources:
   RestApiGateway:
@@ -48,24 +55,27 @@ Resources:
             userId:
               type: string
 
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: src/_layers/common
+      RetentionPolicy:  Delete
+    Metadata:
+      BuildMethod: nodejs14.x
+
   GameFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/game
       Handler: app.handler
-      Runtime: nodejs14.x
+      Layers:
+        - Ref: CommonLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName:
               Ref: GamesTableParam
         - DynamoDBCrudPolicy:
             TableName:
-              Ref: UsersTableParam
-      Environment:
-        Variables:
-          GAMES_TABLE_NAME:
-              Ref: GamesTableParam
-          USERS_TABLE_NAME:
               Ref: UsersTableParam
       Events:
         GetGameApi:
@@ -92,13 +102,11 @@ Resources:
       CodeUri: src/user
       Handler: app.handler
       Runtime: nodejs14.x
+      Layers:
+        - Ref: CommonLayer
       Policies:
         - DynamoDBCrudPolicy:
             TableName:
-              Ref: UsersTableParam
-      Environment:
-        Variables:
-          USERS_TABLE_NAME:
               Ref: UsersTableParam
       Events:
         GetUserApi:

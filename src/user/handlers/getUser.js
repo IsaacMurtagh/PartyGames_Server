@@ -1,5 +1,5 @@
 'use strict';
-const usersTable = require('../usersTable');
+const { usersTable } = require('../layerDeps');
 const createError = require('http-errors')
 
 async function getUser(event, context) {

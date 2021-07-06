@@ -1,8 +1,0 @@
-{
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "path": "/games",
-  "httpMethod": "POST",
-  "body":  "{\"name\": \"Jimminy Cricket!\", \"type\": \"uno\" }"
-}

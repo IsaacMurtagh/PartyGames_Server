@@ -1,4 +1,4 @@
-const gamesTable = require('../tables/gamesTable');
+const { gamesTable } = require('../layerDeps');
 
 async function getGame(event, context) {
   const { id } = event.pathParameters;

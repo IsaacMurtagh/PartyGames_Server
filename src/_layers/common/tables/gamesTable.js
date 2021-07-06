@@ -1,4 +1,4 @@
-const dynamoDb = require('../dbClient');
+const dbClient = require('../dbClient');
 const Game = require('../models/Game');
 class GamesTable {
   constructor() {
@@ -6,7 +6,7 @@ class GamesTable {
   }
 
   async createGame(game) {
-    return dynamoDb.put({
+    return dbClient.put({
       TableName: this.name,
       Item: game.toDocument(),
     }).promise()
@@ -16,7 +16,7 @@ class GamesTable {
   }
 
   async getGameById(id) {
-    return dynamoDb.get({
+    return dbClient.get({
       TableName: this.name,
       Key: { 
         pk: `Game#${id}`,

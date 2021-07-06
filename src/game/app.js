@@ -1,5 +1,4 @@
 'use strict';
-require('./dbClient'); // This must be required before handling requests to use the amazon sdk.
 
 async function handle(event, context) {
   const response = await this.handler(event, context);

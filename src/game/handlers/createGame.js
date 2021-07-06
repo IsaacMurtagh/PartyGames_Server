@@ -1,7 +1,9 @@
-const gamesTable = require('../tables/gamesTable');
-const usersTable = require('../tables/usersTable');
+const {
+  gamesTable,
+  usersTable,
+  Game,
+} = require('../layerDeps');
 const createError = require('http-errors')
-const Game = require('../models/Game');
 
 async function createGame(event, context) {
   const { userId, type, allowNicknames, maxParticipants, name } = JSON.parse(event.body)
