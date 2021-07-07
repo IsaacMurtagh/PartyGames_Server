@@ -1,16 +1,13 @@
 # partygames-app
 ## Deploy the sample application
-To build and deploy your application for the first time, run the following in your shell:
-
-```bash
-sam build
-sam deploy --guided
-```
-
-After the first time you can run the command:
-
+Deploying to dev
 ```bash
 sam build && sam deploy samconfig.toml
+```
+
+deploying to production
+```bash
+sam build && sam deploy samconfig.toml --config-env prod
 ```
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.

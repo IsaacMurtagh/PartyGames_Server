@@ -1,11 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  partygames-app
-
-  Serverless REST api for party games 
+  "Party games Rest Api"
 
 Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: Environment for deploying
   GamesTableParam:
     Type: String
     Default: Games
@@ -19,23 +24,30 @@ Parameters:
       - Users
     Description: The name of the database table for users
 
+Mappings:
+  EnvironmentMap:
+    dev:
+      gamesTable: games-dev
+      usersTable: users-dev
+    prod:
+      gamesTable: games-prod
+      usersTable: users-prod
+
 Globals:
   Function:
     Timeout: 2
     Runtime: nodejs14.x
     Environment:
       Variables:
-          USERS_TABLE_NAME:
-              Ref: UsersTableParam
-          GAMES_TABLE_NAME:
-              Ref: GamesTableParam
+          USERS_TABLE_NAME: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
+          GAMES_TABLE_NAME: !FindInMap [ EnvironmentMap, !Ref "Environment", gamesTable ]
 
 Resources:
   RestApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: Party Games Api Gateway
-      StageName: prod
+      StageName: api
       Models:
         Game: 
           type: object
@@ -72,11 +84,9 @@ Resources:
         - Ref: CommonLayer
       Policies:
         - DynamoDBCrudPolicy:
-            TableName:
-              Ref: GamesTableParam
+            TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
         - DynamoDBCrudPolicy:
-            TableName:
-              Ref: UsersTableParam
+            TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", gamesTable ]
       Events:
         GetGameApi:
           Type: Api
@@ -113,8 +123,7 @@ Resources:
         - Ref: CommonLayer
       Policies:
         - DynamoDBCrudPolicy:
-            TableName:
-              Ref: UsersTableParam
+            TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
       Events:
         GetUserApi:
           Type: Api
@@ -131,11 +140,13 @@ Resources:
             Path: /users
             Method: post
 
-  gamesTable:
+  GamesTable:
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName:
-        Ref: GamesTableParam
+      TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", gamesTable ]
+      Tags:
+        - Key: Party_games_env
+          Value: !Ref "Environment"
       AttributeDefinitions: 
         - AttributeName: pk
           AttributeType: S
@@ -155,8 +166,10 @@ Resources:
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName:
-        Ref: UsersTableParam
+      TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
+      Tags:
+        - Key: Party_games_env
+          Value: !Ref "Environment"
       AttributeDefinitions: 
         - AttributeName: pk
           AttributeType: S
@@ -175,5 +188,5 @@ Resources:
 
 Outputs:
   Api:
-    Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${RestApiGateway}.execute-api.${AWS::Region}.amazonaws.com/api"
