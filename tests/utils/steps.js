@@ -34,12 +34,24 @@ async function createAGame(body) {
   return formatResponse(await gameFunction(event));
 };
 
-async function getGameById() {
+async function getGameById(gameId) {
   const event = generateEvent({
     httpMethod: 'GET',
     pathParameters: {
-      id,
+      gameId,
     }
+  });
+  return formatResponse(await gameFunction(event));
+};
+
+async function joinAGame({ gameId, body }) {
+  const event = generateEvent({
+    path: `/games/${gameId}/join`,
+    httpMethod: 'POST',
+    pathParameters: {
+      gameId,
+    },
+    body,
   });
   return formatResponse(await gameFunction(event));
 };
@@ -50,4 +62,5 @@ module.exports = {
   getUserById,
   createAGame,
   getGameById,
+  joinAGame
 }

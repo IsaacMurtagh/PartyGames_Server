@@ -1,11 +1,12 @@
 
 
 const generateEvent = event => {
-  const { body, pathParameters, httpMethod } = event;
+  const { body, pathParameters, httpMethod, path } = event;
 
   return {
     body: JSON.stringify(body || {}),
     httpMethod,
+    path,
     pathParameters,
     isBase64Encoded: false,
     headers: {

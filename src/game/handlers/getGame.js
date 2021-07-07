@@ -1,8 +1,12 @@
 const { gamesTable } = require('../layerDeps');
+const createError = require('http-errors')
 
 async function getGame(event, context) {
-  const { id } = event.pathParameters;
-  const game = await gamesTable.getGameById(id);
+  const { gameId } = event.pathParameters;
+  const game = await gamesTable.getGameById(gameId);
+  if (!game) {
+    return createError.Forbidden('INVALID_GAME_ID');
+  }
   return game.toApiResponse();
 };
 

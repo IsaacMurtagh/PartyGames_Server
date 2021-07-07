@@ -7,6 +7,7 @@ const gamesTable = inAws ? require('/opt/nodejs/tables/gamesTable') : require('.
 
 const User = inAws ? require('/opt/nodejs/models/User') : require('../_layers/common/models/User');
 const Game = inAws ? require('/opt/nodejs/models/Game') : require('../_layers/common/models/Game');
+const Participant = inAws ? require('/opt/nodejs/models/Participant') : require('../_layers/common/models/Participant');
 
 
 
@@ -15,4 +16,5 @@ module.exports = {
   gamesTable,
   User,
   Game,
+  Participant,
 }

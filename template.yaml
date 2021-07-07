@@ -83,7 +83,7 @@ Resources:
           Properties:
             RestApiId: 
               Ref: 'RestApiGateway'
-            Path: /games/{id}
+            Path: /games/{gameId}
             Method: get
         CreateGameApi:
           Type: Api
@@ -95,6 +95,13 @@ Resources:
             RequestModel:
               Model: Game
               Required: true
+        JoinGameApi:
+          Type: Api
+          Properties:
+            RestApiId: 
+              Ref: 'RestApiGateway'
+            Path: /games/{gameId}/join
+            Method: post
 
   UserFunction:
     Type: AWS::Serverless::Function
