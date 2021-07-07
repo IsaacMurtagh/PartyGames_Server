@@ -8,7 +8,6 @@ class User {
     this.id = props.id;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
-    this.games = props.games;
   }
 
   static fromCreate(props = {}) {
@@ -16,7 +15,6 @@ class User {
       id: uuid(),
       createdAt: moment(),
       updatedAt: moment(),
-      games: [],
     })
   }
 
@@ -33,7 +31,6 @@ class User {
       pk: `User#${this.id}`,
       sk: '#UniqueConstraint',
       id: this.id,
-      games: this.games,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
     }
