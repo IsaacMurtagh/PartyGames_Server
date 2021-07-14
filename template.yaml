@@ -41,6 +41,8 @@ Globals:
       Variables:
           USERS_TABLE_NAME: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
           GAMES_TABLE_NAME: !FindInMap [ EnvironmentMap, !Ref "Environment", gamesTable ]
+  Api:
+    Cors: "'*'"
 
 Resources:
   RestApiGateway:
