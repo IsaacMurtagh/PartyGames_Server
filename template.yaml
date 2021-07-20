@@ -48,6 +48,15 @@ Globals:
     Cors: "'*'"
 
 Resources:
+  # -- Layers --
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: src/_layers/common
+      RetentionPolicy:  Delete
+    Metadata:
+      BuildMethod: nodejs14.x
+
   # -- WEB SOCKETS --
   SimpleChatWebSocket:
     Type: AWS::ApiGatewayV2::Api
@@ -55,6 +64,23 @@ Resources:
       Name: SimpleChatWebSocket
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: "$request.body.action"
+
+  Deployment:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+    - ConnectRoute
+    - DisconnectRoute
+    Properties:
+      ApiId: !Ref SimpleChatWebSocket
+
+  Stage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName: api
+      Description: api stage
+      DeploymentId: !Ref Deployment
+      ApiId: !Ref SimpleChatWebSocket
+
   ConnectRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -66,6 +92,7 @@ Resources:
         - '/'
         - - 'integrations'
           - !Ref ConnectInteg
+
   ConnectInteg:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -75,105 +102,11 @@ Resources:
       IntegrationUri: 
         Fn::Sub:
             arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnConnectFunction.Arn}/invocations
-  DisconnectRoute:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId: !Ref SimpleChatWebSocket
-      RouteKey: $disconnect
-      AuthorizationType: NONE
-      OperationName: DisconnectRoute
-      Target: !Join
-        - '/'
-        - - 'integrations'
-          - !Ref DisconnectInteg
-  DisconnectInteg:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId: !Ref SimpleChatWebSocket
-      Description: Disconnect Integration
-      IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
-  SendRoute:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId: !Ref SimpleChatWebSocket
-      RouteKey: sendmessage
-      AuthorizationType: NONE
-      OperationName: SendRoute
-      Target: !Join
-        - '/'
-        - - 'integrations'
-          - !Ref SendInteg
-  SendInteg:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId: !Ref SimpleChatWebSocket
-      Description: Send Integration
-      IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendMessageFunction.Arn}/invocations
-  Deployment:
-    Type: AWS::ApiGatewayV2::Deployment
-    DependsOn:
-    - ConnectRoute
-    - SendRoute
-    - DisconnectRoute
-    Properties:
-      ApiId: !Ref SimpleChatWebSocket
-  Stage:
-    Type: AWS::ApiGatewayV2::Stage
-    Properties:
-      StageName: api
-      Description: api stage
-      DeploymentId: !Ref Deployment
-      ApiId: !Ref SimpleChatWebSocket
+
   OnConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/onConnect
-      Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
-      Layers:
-        - Ref: CommonLayer
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", connectionsTable ]
-  OnConnectPermission:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-      - SimpleChatWebSocket
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref OnConnectFunction
-      Principal: apigateway.amazonaws.com
-  OnDisconnectFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/onDisconnect
-      Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
-      Layers:
-        - Ref: CommonLayer
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", connectionsTable ]
-  OnDisconnectPermission:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-      - SimpleChatWebSocket
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref OnDisconnectFunction
-      Principal: apigateway.amazonaws.com
-  SendMessageFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/sendmessage
       Handler: app.handler
       MemorySize: 256
       Runtime: nodejs12.x
@@ -188,13 +121,64 @@ Resources:
           - 'execute-api:ManageConnections'
           Resource:
           - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
-  SendMessagePermission:
+
+  OnConnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
       - SimpleChatWebSocket
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref SendMessageFunction
+      FunctionName: !Ref OnConnectFunction
+      Principal: apigateway.amazonaws.com
+  
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref SimpleChatWebSocket
+      RouteKey: $disconnect
+      AuthorizationType: NONE
+      OperationName: DisconnectRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref DisconnectInteg
+
+  DisconnectInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref SimpleChatWebSocket
+      Description: Disconnect Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
+
+  OnDisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/onDisconnect
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+      Layers:
+        - Ref: CommonLayer
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", connectionsTable ]
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
+
+  OnDisconnectPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - SimpleChatWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref OnDisconnectFunction
       Principal: apigateway.amazonaws.com
   
   # -- REST API --
@@ -221,14 +205,6 @@ Resources:
               type: string
             userId:
               type: string
-
-  CommonLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      ContentUri: src/_layers/common
-      RetentionPolicy:  Delete
-    Metadata:
-      BuildMethod: nodejs14.x
 
   GameFunction:
     Type: AWS::Serverless::Function

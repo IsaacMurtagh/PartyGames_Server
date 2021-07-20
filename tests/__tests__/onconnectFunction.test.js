@@ -11,8 +11,9 @@ describe('onConnectFunction', () => {
     const connectionId = uuid();
     const connectResponse = await steps.connectToWss({ gameId, userId, connectionId });
 
-    expect(connectResponse.statusCode).toEqual(200);
-    connectResponse.body.createdAt = undefined;
-    expect(connectResponse.body).toEqual({ gameId, userId, connectionId });
+    expect(connectResponse).toEqual({
+      statusCode: 200,
+      body: { gameId, userId, connectionId }
+    });
   });
 });

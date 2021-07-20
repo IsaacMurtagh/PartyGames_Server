@@ -5,10 +5,14 @@ const onConnectFunction = require('../../src/onConnect/app').handler;
 const onDisconnectFunction = require('../../src/onDisconnect/app').handler;
 
 function formatResponse(response, removeHeaders=true) {
-  return {
-    ...response,
-    body: JSON.parse(response.body),
-    headers: removeHeaders ? undefined : response.headers,
+  try {
+    return {
+      ...response,
+      body: JSON.parse(response.body),
+      headers: removeHeaders ? undefined : response.headers,
+    }
+  } catch(err) {
+    console.error({ response, err });
   }
 }
 
@@ -78,7 +82,7 @@ async function disconnectFromWss({ connectionId }) {
       connectionId,
     }
   });
-  return await onDisconnectFunction(event);
+  return formatResponse(await onDisconnectFunction(event));
 };
 
 

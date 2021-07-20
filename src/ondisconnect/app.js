@@ -1,13 +1,27 @@
 require('aws-sdk');
-const { connectionsTable } = require('./layerDeps');
+function badConnection(reason='') {
+  return { statusCode: 500, body: `Failed to connect: ${reason}` }
+}
 
 exports.handler = async event => {
-  const connectionId = event.requestContext.connectionId
   try {
+    const { connectionsTable, SocketManager } = require('./layerDeps');
+  
+    const connectionId = event.requestContext.connectionId
     const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
+
+    if (!connection) {
+      return badConnection(`Connection Id: ${connectionId}`);
+    }
+
     await connectionsTable.deleteConnection(connection);
+    const connections = await connectionsTable.getAllConnectionsForGame(connection.gameId);
+    const socketManager = new SocketManager(event.requestContext);
+    await socketManager.postToAllConnections({ connections, data: 'Someone has left' });  
+  
+    return { statusCode: 200, body: JSON.stringify(connection.toApiResponse()) };
   } catch (err) {
-    return { statusCode: 200, body: 'Connection does not exist.' + err };
+    console.log(err);
+    return badConnection(err.stack);
   }
-  return { statusCode: 200, body: 'Disconnected.' };
 };

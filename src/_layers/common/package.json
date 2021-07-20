@@ -5,10 +5,10 @@
   "repository": "https://github.com/IsaacMurtagh/PartyGames_Server",
   "author": "Isaac Murtagh",
   "dependencies": {
-    "axios": "^0.21.1",
     "http-errors": "^1.8.0",
     "moment": "^2.29.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "verror": "^1.10.0"
   },
   "scripts": {
     "test": "mocha tests/unit/"
