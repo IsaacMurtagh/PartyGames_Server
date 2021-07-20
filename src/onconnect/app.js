@@ -5,8 +5,7 @@ function badConnection(reason='') {
 
 exports.handler = async event => {
   try {
-    const { connectionsTable, Connection } = require('./layerDeps');
-    const SocketManager = require('./SocketManager');
+    const { connectionsTable, Connection, SocketManager } = require('./layerDeps');
   
     const connectionId = event.requestContext.connectionId
     const { userId, gameId } = event.queryStringParameters;
@@ -15,7 +14,7 @@ exports.handler = async event => {
     }
   
     const connections = await connectionsTable.getAllConnectionsForGame(gameId);
-    
+
     const connection = Connection.fromCreate({ connectionId, userId, gameId });
     await connectionsTable.createConnection(connection);
 

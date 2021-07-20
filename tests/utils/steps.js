@@ -12,7 +12,7 @@ function formatResponse(response, removeHeaders=true) {
       headers: removeHeaders ? undefined : response.headers,
     }
   } catch(err) {
-    console.error({ response, err});
+    console.error({ response, err });
   }
 }
 
@@ -82,7 +82,7 @@ async function disconnectFromWss({ connectionId }) {
       connectionId,
     }
   });
-  return await onDisconnectFunction(event);
+  return formatResponse(await onDisconnectFunction(event));
 };
 
 

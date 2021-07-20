@@ -39,7 +39,7 @@ class Connection {
   toApiResponse() {
     return {
       ...this,
-      createdAt: this.createdAt.toISOString(),
+      createdAt: undefined,
     }
   }
 
