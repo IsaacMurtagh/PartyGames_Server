@@ -142,6 +142,12 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", connectionsTable ]
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
   OnConnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:

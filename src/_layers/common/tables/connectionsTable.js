@@ -1,5 +1,6 @@
 const dbClient = require('../dbClient');
 const Connection = require('../models/Connection');
+const VError = require('verror');
 
 class ConnectionsTable {
   constructor() {
@@ -16,17 +17,22 @@ class ConnectionsTable {
     });
   }
 
-  async getAllGameConnections(gameId) {
+  async getAllConnectionsForGame(gameId) {
     return dbClient.query({
       TableName: this.name,
       ExpressionAttributeValues: {
-        ':pk': { S: `Game#${gameId}` },
-        ':sk': { S: 'User#' }
+        ':pk': `Game#${gameId}`,
+        ':sk': 'User#'
       },
       KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)'
     }).promise()
+    .catch(err => {
+      const error = new VError(err);
+      console.error(error);
+      throw error;
+    }) 
     .then(result => {
-      return result.Items ? result.Items.map(item => Connection.fromDynamoDocument(item)) : [];
+      return result.Items ? result.Items.map(item => Connection.fromDocument(item)) : [];
     });
   }
 
