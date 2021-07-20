@@ -1,11 +1,14 @@
 const generateEvent = require('../utils/generateEvent');
 const userFunction = require('../../src/user/app').handler;
 const gameFunction = require('../../src/game/app').handler;
+const onConnectFunction = require('../../src/onConnect/app').handler;
+const onDisconnectFunction = require('../../src/onDisconnect/app').handler;
 
-function formatResponse(response) {
+function formatResponse(response, removeHeaders=true) {
   return {
     ...response,
     body: JSON.parse(response.body),
+    headers: removeHeaders ? undefined : response.headers,
   }
 }
 
@@ -56,11 +59,37 @@ async function joinAGame({ gameId, body }) {
   return formatResponse(await gameFunction(event));
 };
 
+async function connectToWss({ gameId, userId, connectionId }) {
+  const event = generateEvent({
+    queryStringParameters: {
+      gameId,
+      userId,
+    },
+    requestContext: {
+      connectionId,
+    }
+  });
+  return formatResponse(await onConnectFunction(event));
+};
+
+async function disconnectFromWss({ connectionId }) {
+  const event = generateEvent({
+    requestContext: {
+      connectionId,
+    }
+  });
+  return await onDisconnectFunction(event);
+};
+
+
+
 
 module.exports = {
   createAUser,
   getUserById,
   createAGame,
   getGameById,
-  joinAGame
+  joinAGame,
+  connectToWss,
+  disconnectFromWss,
 }

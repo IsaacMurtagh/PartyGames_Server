@@ -3,7 +3,7 @@ const Game = require('../models/Game');
 const Participant = require('../models/Participant');
 class GamesTable {
   constructor() {
-    this.name = process.env.GAMES_TABLE_NAME || 'Users';
+    this.name = process.env.GAMES_TABLE_NAME;
   }
 
   async createGame(game) {
