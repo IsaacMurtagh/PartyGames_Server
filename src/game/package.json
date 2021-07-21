@@ -4,11 +4,10 @@
   "main": "app.js",
   "repository": "https://github.com/IsaacMurtagh/PartyGames_Server",
   "author": "Isaac Murtagh",
-  "scripts": {
-    "test": "mocha tests/unit/"
+  "dependencies": {
+    "joi": "^17.4.1"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.2.1"
+    "jest": "^27.0.6"
   }
 }

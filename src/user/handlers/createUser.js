@@ -2,7 +2,7 @@
 const { usersTable, User } = require('../layerDeps');
 
 async function createUser(event, context) {
-  const user = User.fromCreate(JSON.parse(event.body));
+  const user = User.fromCreate();
   await usersTable.createUser(user);
   return user.toApiResponse();
 };

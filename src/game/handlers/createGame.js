@@ -3,14 +3,15 @@ const {
   usersTable,
   Game,
 } = require('../layerDeps');
-const createError = require('http-errors')
+const createError = require('http-errors');
+const Joi = require('joi');
 
 async function createGame(event, context) {
   const { userId, type, allowNicknames, maxParticipants, name } = JSON.parse(event.body);
 
   const creator = await usersTable.getUserById(userId);
   if (!creator) {
-    return createError.Forbidden('INVALID_USER_ID');
+    throw createError.Forbidden('INVALID_USER_ID');
   }
 
   const game = Game.fromCreate({ userId, type, allowNicknames, maxParticipants, name });
@@ -21,5 +22,10 @@ async function createGame(event, context) {
 
 module.exports = {
   handler: createGame,
-  validation: 'hello boss',
+  schema: Joi.object({
+    name: Joi.string().max(16).required(),
+    type: Joi.string().valid('WouldYouRather').required(),
+    allowNicknames: Joi.boolean().optional(),
+    userId: Joi.string().uuid().required(),
+  }),
 };

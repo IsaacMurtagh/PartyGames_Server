@@ -6,7 +6,7 @@ async function getUser(event, context) {
   const { id } = event.pathParameters;
   const user = await usersTable.getUserById(id);
   if (!user) {
-    return createError.Forbidden('INVALID_USER_ID');
+    throw createError.Forbidden('INVALID_USER_ID');
   }
   return user.toApiResponse();
 };

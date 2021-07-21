@@ -1,23 +1,33 @@
 'use strict';
 require('aws-sdk'); // This must be required before handling requests to use the amazon sdk.
+const createError = require('http-errors');
+const { handleGracefully } = require('./layerDeps');
 
 async function handle(event, context) {
-  const response = await this.handler(event, context);
-  return { 
-    statusCode: response?.statusCode || 200,
-    headers: {
-      "Access-Control-Allow-Origin" : "*",
-      "Access-Control-Allow-Credentials" : true
-    },
-    body: JSON.stringify(response || {})
+  try {
+    this.schema && await this.schema.validateAsync(JSON.parse(event.body));
+  } catch(err) {
+    throw createError.BadRequest(err.message);
   }
+  const body = await this.handler(event, context);
+  return handleGracefully({ body, statusCode: 200 });
 }
 
+
 exports.handler = async (event, context) => {
-  switch (event.httpMethod) {
-    case 'GET':
-      return await handle.bind(require('./handlers/getUser'))(event, context);
-    case 'POST':
-      return await handle.bind(require('./handlers/createUser'))(event, context);
+  try {
+    switch (event.httpMethod) {
+      case 'GET':
+        return await handle.bind(require('./handlers/getUser'))(event, context);
+      case 'POST':
+        return await handle.bind(require('./handlers/createUser'))(event, context);
+    }
+  } catch(err) {
+    if (err.statusCode) {
+      const { statusCode, message } = err;
+      return handleGracefully({ body: { message }, statusCode });
+    }
+    console.error(err);
+    return { statusCode: 500, body: 'Something went wrong' }
   }
 }

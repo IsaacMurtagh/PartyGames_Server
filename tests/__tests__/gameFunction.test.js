@@ -9,7 +9,11 @@ describe('gameFunction', () => {
       response = await steps.createAUser();
       const userId = response.body.id;
 
-      response = await steps.createAGame({ userId });
+      response = await steps.createAGame({ 
+        userId,
+        name: 'Pokemon Lobby',
+        type: 'WouldYouRather', 
+      });
       expect(response.body.id).toBeDefined();
 
       const gameId = response.body.id;
@@ -19,7 +23,9 @@ describe('gameFunction', () => {
 
     it('returns 403 when given an invalid userId', async () => {
       const response = await steps.createAGame({
-        userId: 'U0001',
+        userId: 'edf22347-1fc9-4a40-a8d9-3e1aecda2b2c',
+        name: 'Pokemon Lobby',
+        type: 'WouldYouRather',
       })
       expect(response).toEqual({
         statusCode: 403,

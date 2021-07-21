@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "repository": "https://github.com/IsaacMurtagh/PartyGames_Server",
-  "author": "Isaac Murtagh"
+  "author": "Isaac Murtagh",
+  "devDependencies": {
+    "jest": "^27.0.6"
+  }
 }

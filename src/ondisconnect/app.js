@@ -1,17 +1,15 @@
 require('aws-sdk');
-function badConnection(reason='') {
-  return { statusCode: 500, body: `Failed to connect: ${reason}` }
-}
+const createError = require('http-errors');
 
 exports.handler = async event => {
   try {
-    const { connectionsTable, SocketManager } = require('./layerDeps');
+    const { connectionsTable, SocketManager, handleGracefully } = require('./layerDeps');
   
     const connectionId = event.requestContext.connectionId
     const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
 
     if (!connection) {
-      return badConnection(`Connection Id: ${connectionId}`);
+      return handleGracefully({ statusCode: 200, body: { message: 'Connection already terminated' } });
     }
 
     await connectionsTable.deleteConnection(connection);
@@ -19,9 +17,13 @@ exports.handler = async event => {
     const socketManager = new SocketManager(event.requestContext);
     await socketManager.postToAllConnections({ connections, data: 'Someone has left' });  
   
-    return { statusCode: 200, body: JSON.stringify(connection.toApiResponse()) };
-  } catch (err) {
-    console.log(err);
-    return badConnection(err.stack);
+    return handleGracefully({ statusCode: 200, body: connection.toApiResponse() });
+  } catch(err) {
+    if (err.statusCode) {
+      const { statusCode, message } = err;
+      return handleGracefully({ body: { message }, statusCode });
+    }
+    console.error(err);
+    return { statusCode: 500, body: 'Something went wrong' }
   }
 };

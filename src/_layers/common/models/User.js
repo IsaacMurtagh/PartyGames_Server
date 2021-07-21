@@ -10,7 +10,7 @@ class User {
     this.updatedAt = props.updatedAt;
   }
 
-  static fromCreate(props = {}) {
+  static fromCreate() {
     return new User({
       id: uuid(),
       createdAt: moment(),
