@@ -6,7 +6,7 @@ describe('onConnectFunction', () => {
     const creatorResponse = await steps.createAUser();
     const gameResponse = await steps.createAGame({ userId: creatorResponse.body.id });
 
-    const gameId = gameResponse.body.game.id;
+    const gameId = gameResponse.body.id;
     const userId = creatorResponse.body.id;
     const connectionId = uuid();
     const connectResponse = await steps.connectToWss({ gameId, userId, connectionId });

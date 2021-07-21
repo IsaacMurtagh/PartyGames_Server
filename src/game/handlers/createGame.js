@@ -2,7 +2,6 @@ const {
   gamesTable,
   usersTable,
   Game,
-  Participant,
 } = require('../layerDeps');
 const createError = require('http-errors')
 
@@ -16,14 +15,8 @@ async function createGame(event, context) {
 
   const game = Game.fromCreate({ userId, type, allowNicknames, maxParticipants, name });
   await gamesTable.createGame(game);
-
-  const participant = Participant.fromCreate({ userId, gameId: game.id });
-  await gamesTable.createParticipant(participant);
-
-  return {
-    game: game.toApiResponse(),
-    self: participant.toApiResponse(),
-  }
+  
+  return game.toApiResponse();
 };
 
 module.exports = {

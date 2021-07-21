@@ -19,9 +19,6 @@ exports.handler = async (event, context) => {
     case 'GET':
       return await handle.bind(require('./handlers/getGame'))(event, context);
     case 'POST':
-      if (/\/games\/.*\/join$/.test(event.path)) {
-        return await handle.bind(require('./handlers/joinGame'))(event, context);
-      }
       return await handle.bind(require('./handlers/createGame'))(event, context);
   }
 }
