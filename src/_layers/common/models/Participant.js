@@ -6,31 +6,23 @@ class Participant {
 
   constructor(props) {
     this.userId = props.userId;
-    this.id = props.gameId;
+    this.alias = props.alias;
+    this.gameId = props.gameId;
     this.joinedAt = props.joinedAt;
     this.updatedAt = props.updatedAt;
     this.displayName = props.displayName;
-    this.creator = props.creator;
-    this.alias = props.alias;
+    this.active = props.active;
   }
 
-  static fromCreate(props) {
+  static fromCreate({ userId, gameId, alias, displayName }) {
     return new Participant({
-      ...props,
-      alias: aliasGenerator(),
-      creator: true,
+      userId,
+      gameId,
+      alias,
+      displayName,
       joinedAt: moment(),
       updatedAt: moment(),
-    })
-  }
-
-  static fromJoin(props) {
-    return new Participant({
-      ...props,
-      alias: aliasGenerator(),
-      creator: false,
-      joinedAt: moment(),
-      updatedAt: moment(),
+      active: true,
     })
   }
 
@@ -45,7 +37,7 @@ class Participant {
   toDocument() {
     return {
       ...this,
-      pk: `Game#${this.id}`,
+      pk: `Game#${this.gameId}`,
       sk: `Participant#${this.userId}`,
       joinedAt: this.joinedAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
@@ -55,10 +47,7 @@ class Participant {
   toApiResponse() {
     return {
       displayName: this.displayName,
-      creator: this.creator,
       alias: this.alias,
-      joinedAt: this.joinedAt.toISOString(),
-      updatedAt: this.updatedAt.toISOString(),
     }
   }
 }

@@ -38,6 +38,19 @@ class GamesTable {
       return participant;
     });
   }
+
+  async getParticipant({ userId, gameId }) {
+    return dbClient.get({
+      TableName: this.name,
+      Key: { 
+        pk: `Game#${gameId}`,
+        sk: `Participant#${userId}`,
+      }
+    }).promise()
+    .then(result => {
+      return result.Item ? Participant.fromDocument(result.Item) : undefined;
+    });
+  }
 }
 const gamesTable = new GamesTable();
 module.exports = gamesTable;
