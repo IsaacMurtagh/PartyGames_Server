@@ -187,24 +187,6 @@ Resources:
     Properties:
       Name: Party Games Api Gateway
       StageName: api
-      Models:
-        Game: 
-          type: object
-          required:
-            - type
-            - allowNicknames
-            - userId
-          properties:
-            type:
-              type: string
-            allowNicknames:
-              type: boolean
-            maxPartitions:
-              type: integer
-            name:
-              type: string
-            userId:
-              type: string
 
   GameFunction:
     Type: AWS::Serverless::Function
@@ -232,16 +214,6 @@ Resources:
             RestApiId: 
               Ref: 'RestApiGateway'
             Path: /games
-            Method: post
-            RequestModel:
-              Model: Game
-              Required: true
-        JoinGameApi:
-          Type: Api
-          Properties:
-            RestApiId: 
-              Ref: 'RestApiGateway'
-            Path: /games/{gameId}/join
             Method: post
 
   UserFunction:
