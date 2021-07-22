@@ -1,9 +1,9 @@
 require('aws-sdk');
 const createError = require('http-errors');
+const { connectionsTable, SocketManager, handleGracefully } = require('./layerDeps');
 
 exports.handler = async event => {
   try {
-    const { connectionsTable, SocketManager, handleGracefully } = require('./layerDeps');
   
     const connectionId = event.requestContext.connectionId
     const connection = await connectionsTable.getConnectionByConnectionId(connectionId);

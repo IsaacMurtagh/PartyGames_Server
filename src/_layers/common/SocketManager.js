@@ -11,7 +11,7 @@ class SocketManager {
   }
 
   async postToAllConnections({ connections, data }) {
-    await Promise.all(connections.map(({ connectionId }) => {
+    await Promise.any(connections.map(({ connectionId }) => {
       return this.client.postToConnection({ ConnectionId: connectionId, Data: data }).promise();
     }));
   }

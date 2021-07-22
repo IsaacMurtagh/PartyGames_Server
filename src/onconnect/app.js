@@ -1,10 +1,9 @@
 require('aws-sdk');
 const createError = require('http-errors');
+const { connectionsTable, Connection, SocketManager, handleGracefully } = require('./layerDeps');
 
 exports.handler = async event => {
   try {
-    const { connectionsTable, Connection, SocketManager, handleGracefully } = require('./layerDeps');
-  
     const connectionId = event.requestContext.connectionId
     const { userId, gameId } = event.queryStringParameters;
     if (!userId || !gameId) {
@@ -14,7 +13,11 @@ exports.handler = async event => {
     const connections = await connectionsTable.getAllConnectionsForGame(gameId);
 
     const connection = Connection.fromCreate({ connectionId, userId, gameId });
-    await connectionsTable.createConnection(connection);
+    try {
+      await connectionsTable.createConnection(connection);
+    } catch {
+      throw createError.Forbidden('CONNECTION_ALREADY_ESTABLISHED');
+    }
 
     const socketManager = new SocketManager(event.requestContext);
     await socketManager.postToAllConnections({ connections, data: 'Someone has joined!'});  

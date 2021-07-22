@@ -11,6 +11,7 @@ class ConnectionsTable {
     return dbClient.put({
       TableName: this.name,
       Item: connection.toDocument(),
+      ConditionExpression: 'attribute_not_exists(pk)',
     }).promise()
     .then(() => {
       return connection;
