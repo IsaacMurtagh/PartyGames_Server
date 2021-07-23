@@ -13,7 +13,6 @@ async function handle(event, context) {
   return handleGracefully({ body, statusCode: 200 });
 }
 
-
 exports.handler = async (event, context) => {
   try {
     switch (event.httpMethod) {

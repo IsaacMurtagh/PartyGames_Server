@@ -13,7 +13,6 @@ describe('userFunction', () => {
     const id = createResponse.body.id;
 
     const response = await steps.getUserById(id);
-    console.log(response);
     expect(response.body.id).toBeDefined();
     expect(response.body.alias).toBeDefined();
   });

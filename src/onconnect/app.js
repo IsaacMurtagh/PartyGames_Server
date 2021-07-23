@@ -13,7 +13,7 @@ const {
 exports.handler = async event => {
   try {
     const connectionId = event.requestContext.connectionId
-    const { userId, gameId, name } = event.queryStringParameters;
+    const { userId, gameId, displayName } = event.queryStringParameters;
     if (!userId || !gameId) throw createError.BadRequest('userId and gameId are required query string parameters');
 
     const user = await usersTable.getUserById(userId);
@@ -27,7 +27,7 @@ exports.handler = async event => {
       throw createError.Forbidden('CONNECTION_ALREADY_ESTABLISHED');
     }
 
-    const participant = Participant.fromCreate({ userId, gameId, alias: user.alias, name });
+    const participant = Participant.fromCreate({ userId, gameId, alias: user.alias, displayName });
     await gamesTable.createParticipant(participant);
 
     const socketManager = new SocketManager(event.requestContext);

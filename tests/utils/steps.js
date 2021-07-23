@@ -63,11 +63,12 @@ async function joinAGame({ gameId, body }) {
   return formatResponse(await gameFunction(event));
 };
 
-async function connectToWss({ gameId, userId, connectionId }) {
+async function connectToWss({ gameId, userId, connectionId, displayName }) {
   const event = generateEvent({
     queryStringParameters: {
       gameId,
       userId,
+      displayName,
     },
     requestContext: {
       connectionId,

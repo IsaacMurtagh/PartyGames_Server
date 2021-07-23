@@ -51,6 +51,20 @@ class GamesTable {
       return result.Item ? Participant.fromDocument(result.Item) : undefined;
     });
   }
+
+  async getAllParticipants(gameId) {
+    return dbClient.query({
+      TableName: this.name,
+      ExpressionAttributeValues: {
+        ':pk': `Game#${gameId}`,
+        ':sk': 'Participant#'
+      },
+      KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)'
+    }).promise()
+    .then(result => {
+      return result.Items ? result.Items.map(item => Participant.fromDocument(item)) : [];
+    });
+  }
 }
 const gamesTable = new GamesTable();
 module.exports = gamesTable;

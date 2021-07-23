@@ -5,8 +5,10 @@ async function getGame(event, context) {
   const { gameId } = event.pathParameters;
   const game = await gamesTable.getGameById(gameId);
   if (!game) {
-    return createError.Forbidden('INVALID_GAME_ID');
+    throw createError.Forbidden('INVALID_GAME_ID');
   }
+
+  game.participants = await gamesTable.getAllParticipants(gameId);
   return game.toApiResponse();
 };
 

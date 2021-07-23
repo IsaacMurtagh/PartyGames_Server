@@ -11,12 +11,14 @@ class Game {
     this.name = props.name;
     this.type = props.type;
     this.allowNicknames = props.allowNicknames;
-    this.maxPlayers = props.maxPlayers || 5;
+    this.participants = props.participants;
   }
 
   static fromCreate(props) {
     return new Game({
       ...props,
+      participants: [],
+      allowNicknames: props.allowNicknames || true,
       createdAt: moment(),
       updatedAt: moment(),
       id: uuid(),
@@ -44,6 +46,7 @@ class Game {
   toApiResponse() {
     return {
       ...this,
+      participants: this.participants.map(p => p.toApiResponse()),
     }
   }
 }
