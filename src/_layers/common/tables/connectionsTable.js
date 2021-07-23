@@ -27,11 +27,6 @@ class ConnectionsTable {
       },
       KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)'
     }).promise()
-    .catch(err => {
-      const error = new VError(err);
-      console.error(error);
-      throw error;
-    }) 
     .then(result => {
       return result.Items ? result.Items.map(item => Connection.fromDocument(item)) : [];
     });

@@ -44,8 +44,6 @@ class Game {
   toApiResponse() {
     return {
       ...this,
-      createdAt: this.createdAt.toISOString(),
-      updatedAt: this.updatedAt.toISOString(),
     }
   }
 }

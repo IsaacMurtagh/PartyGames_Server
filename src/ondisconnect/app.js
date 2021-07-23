@@ -1,6 +1,11 @@
 require('aws-sdk');
 const createError = require('http-errors');
-const { connectionsTable, SocketManager, handleGracefully } = require('./layerDeps');
+const { 
+  connectionsTable, 
+  SocketManager, 
+  handleGracefully, 
+  gamesTable,
+} = require('./layerDeps');
 
 exports.handler = async event => {
   try {
@@ -11,11 +16,19 @@ exports.handler = async event => {
     if (!connection) {
       return handleGracefully({ statusCode: 200, body: { message: 'Connection already terminated' } });
     }
+    const participant = await gamesTable.getParticipant(connection);
+    participant.active = false;
+    await gamesTable.createParticipant(connection);
 
     await connectionsTable.deleteConnection(connection);
     const connections = await connectionsTable.getAllConnectionsForGame(connection.gameId);
+
     const socketManager = new SocketManager(event.requestContext);
-    await socketManager.postToAllConnections({ connections, data: 'Someone has left' });  
+    await socketManager.postToAllConnections({ 
+      connections, 
+      data: participant.toApiResponse(),
+      message: 'PLAYER_LEFT',
+    });  
   
     return handleGracefully({ statusCode: 200, body: connection.toApiResponse() });
   } catch(err) {

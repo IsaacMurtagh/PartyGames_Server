@@ -10,9 +10,10 @@ class SocketManager {
     });
   }
 
-  async postToAllConnections({ connections, data }) {
-    await Promise.any(connections.map(({ connectionId }) => {
-      return this.client.postToConnection({ ConnectionId: connectionId, Data: data }).promise();
+  async postToAllConnections({ connections, data, message }) {
+    const Data = JSON.stringify({ data, message });
+    await Promise.allSettled(connections.map(({ connectionId }) => {
+      return this.client.postToConnection({ ConnectionId: connectionId, Data }).promise();
     }));
   }
 }

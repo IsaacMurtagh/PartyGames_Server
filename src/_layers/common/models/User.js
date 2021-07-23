@@ -1,6 +1,7 @@
 'use strict';
 const moment = require('moment');
 const uuid = require('uuid');
+const { aliasGenerator } = require('../utils/randomGenerator');
 
 class User {
 
@@ -8,11 +9,13 @@ class User {
     this.id = props.id;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
+    this.alias = props.alias;
   }
 
   static fromCreate() {
     return new User({
       id: uuid(),
+      alias: aliasGenerator(),
       createdAt: moment(),
       updatedAt: moment(),
     })
@@ -31,6 +34,7 @@ class User {
       pk: `User#${this.id}`,
       sk: '#UniqueConstraint',
       id: this.id,
+      alias: this.alias,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
     }
@@ -38,9 +42,7 @@ class User {
 
   toApiResponse() {
     return {
-      ...this,
-      createdAt: this.createdAt.toISOString(),
-      updatedAt: this.updatedAt.toISOString(),
+      ...this
     }
   }
 }
