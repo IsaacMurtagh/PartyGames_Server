@@ -67,11 +67,19 @@ describe('onConnectFunction', () => {
 
     const gameId = game.id;
     await steps.connectToWss({ gameId, userId: userOne.id, connectionId: uuid() });
-    await steps.connectToWss({ gameId, userId: userTwo.id, connectionId: uuid() });
+    await steps.connectToWss({ 
+      gameId, 
+      userId: userTwo.id, 
+      connectionId: uuid(),
+      displayName: 'pokemon man'
+    });
     
     const expectedResponse = {
       message: 'PLAYER_JOINED',
-      data: { alias: userTwo.alias }
+      data: { 
+        alias: userTwo.alias,
+        displayName: 'pokemon man', 
+      }
     }
     expect(spy.calledOnce).toBeTruthy();
     expect(spy.calledWith(expectedResponse)).toBeTruthy();

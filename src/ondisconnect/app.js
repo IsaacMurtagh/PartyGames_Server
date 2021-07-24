@@ -1,42 +1,37 @@
 require('aws-sdk');
 const createError = require('http-errors');
-const { 
-  connectionsTable, 
-  SocketManager, 
-  handleGracefully, 
-  gamesTable,
-} = require('./layerDeps');
 
-exports.handler = async event => {
+function serializeResponse({ body, statusCode }) {
+  return {
+    statusCode,
+    body: JSON.stringify(body),
+    headers: {
+      "Access-Control-Allow-Origin" : "*",
+      "Access-Control-Allow-Credentials" : true
+    },
+  }
+}
+
+async function handle(event, context) {
   try {
-  
-    const connectionId = event.requestContext.connectionId
-    const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
-
-    if (!connection) {
-      return handleGracefully({ statusCode: 200, body: { message: 'Connection already terminated' } });
-    }
-    const participant = await gamesTable.getParticipant(connection);
-    participant.active = false;
-    await gamesTable.createParticipant(connection);
-
-    await connectionsTable.deleteConnection(connection);
-    const connections = await connectionsTable.getAllConnectionsForGame(connection.gameId);
-
-    const socketManager = new SocketManager(event.requestContext);
-    await socketManager.postToAllConnections({ 
-      connections, 
-      data: participant.toApiResponse(),
-      message: 'PLAYER_LEFT',
-    });  
-  
-    return handleGracefully({ statusCode: 200, body: connection.toApiResponse() });
+    this.schema && await this.schema.validateAsync(JSON.parse(event.body));
   } catch(err) {
+    throw createError.BadRequest(err.message);
+  }
+  const body = await this.handler(event, context);
+  return { body, statusCode: 200 };
+}
+
+exports.handler = async function(event, context) {
+  try {
+    return serializeResponse(await handle.bind(require('./handlers/onDisconnect'))(event, context));
+  } catch(err) {
+    console.log(err.statusCode);
     if (err.statusCode) {
       const { statusCode, message } = err;
-      return handleGracefully({ body: { message }, statusCode });
+      return serializeResponse({ body: { message }, statusCode });
     }
     console.error(err);
-    return { statusCode: 500, body: 'Something went wrong' }
+    return serializeResponse({ statusCode: 500, body: { message: 'Internal Server Error' } })
   }
-};
+}

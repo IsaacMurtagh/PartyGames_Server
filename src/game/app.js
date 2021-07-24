@@ -1,7 +1,17 @@
 'use strict';
 require('aws-sdk'); // This must be required before handling requests to use the amazon sdk.
 const createError = require('http-errors');
-const { handleGracefully } = require('./layerDeps');
+
+function serializeResponse({ body, statusCode }) {
+  return {
+    statusCode,
+    body: JSON.stringify(body),
+    headers: {
+      "Access-Control-Allow-Origin" : "*",
+      "Access-Control-Allow-Credentials" : true
+    },
+  }
+}
 
 async function handle(event, context) {
   try {
@@ -10,23 +20,23 @@ async function handle(event, context) {
     throw createError.BadRequest(err.message);
   }
   const body = await this.handler(event, context);
-  return handleGracefully({ body, statusCode: 200 });
+  return { body, statusCode: 200 };
 }
 
 exports.handler = async (event, context) => {
   try {
     switch (event.httpMethod) {
       case 'GET':
-        return await handle.bind(require('./handlers/getGame'))(event, context);
+        return serializeResponse(await handle.bind(require('./handlers/getGame'))(event, context));
       case 'POST':
-        return await handle.bind(require('./handlers/createGame'))(event, context);
+        return serializeResponse(await handle.bind(require('./handlers/createGame'))(event, context));
     }
   } catch(err) {
     if (err.statusCode) {
       const { statusCode, message } = err;
-      return handleGracefully({ body: { message }, statusCode });
+      return serializeResponse({ body: { message }, statusCode });
     }
     console.error(err);
-    return { statusCode: 500, body: 'Something went wrong' }
+    return serializeResponse({ statusCode: 500, body: { message: 'Internal Server Error' } })
   }
 }
