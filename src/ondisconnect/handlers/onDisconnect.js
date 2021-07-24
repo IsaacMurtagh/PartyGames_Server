@@ -14,7 +14,7 @@ async function onDisconnect(event) {
   }
   const participant = await gamesTable.getParticipant(connection);
   participant.active = false;
-  await gamesTable.createParticipant(connection);
+  await gamesTable.createParticipant(participant);
 
   await connectionsTable.deleteConnection(connection);
   const connections = await connectionsTable.getAllConnectionsForGame(connection.gameId);

@@ -50,7 +50,7 @@ describe('onConnectFunction', () => {
     AwsMock.restore();
   });
 
-  it.only('User is broadcasted with message when another user joins', async () => {
+  it('User is broadcasted with message when another user joins', async () => {
     const spy = sinon.spy();
     AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
       spy(JSON.parse(params.Data));

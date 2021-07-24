@@ -33,7 +33,7 @@ describe('onDisconnectFunction', () => {
     });
   });
 
-  it.only('Message is broadcast on disconnect', async () => {
+  it('Message is broadcast on disconnect', async () => {
     const spy = sinon.spy();
     AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
       spy(JSON.parse(params.Data));

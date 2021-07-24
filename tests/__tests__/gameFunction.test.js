@@ -48,9 +48,15 @@ describe('gameFunction', () => {
       const displayName = 'joey';
       await steps.connectToWss({ gameId, userId, connectionId, displayName });
 
-      const getGameResponse = await steps.getGameById(gameId);
-      expect(getGameResponse.body.participants).toEqual([
+      const activeGameResponse = await steps.getGameById(gameId);
+      expect(activeGameResponse.body.participants).toEqual([
         { alias: user.alias, displayName, active: true },
+      ]);
+
+      await steps.disconnectFromWss({ connectionId, });
+      const inactiveGameResponse = await steps.getGameById(gameId);
+      expect(inactiveGameResponse.body.participants).toEqual([
+        { alias: user.alias, displayName, active: false },
       ]);
     });
   });
