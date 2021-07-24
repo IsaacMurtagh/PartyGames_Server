@@ -32,6 +32,6 @@ exports.handler = async function(event, context) {
       return serializeResponse({ body: { message }, statusCode });
     }
     console.error(err);
-    return serializeResponse({ statusCode: 500, body: 'Internal Server Error' })
+    return serializeResponse({ statusCode: 500, body: { message: 'Internal Server Error' } })
   }
 }

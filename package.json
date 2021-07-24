@@ -3,7 +3,6 @@
     "test": "GAMES_TABLE_NAME=games USERS_TABLE_NAME=users CONNECTIONS_TABLE_NAME=connections jest"
   },
   "devDependencies": {
-    "@lambda-middleware/http-error-handler": "^2.0.0",
     "@shelf/jest-dynamodb": "^1.8.1",
     "aws-sdk": "^2.939.0",
     "aws-sdk-mock": "^5.2.1",

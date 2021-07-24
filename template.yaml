@@ -37,7 +37,7 @@ Mappings:
 
 Globals:
   Function:
-    Timeout: 2
+    Timeout: 5
     Runtime: nodejs14.x
     Environment:
       Variables:
@@ -269,8 +269,8 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
       ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -292,8 +292,8 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
       ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -322,13 +322,13 @@ Resources:
           - AttributeName: connectionId
             KeyType: HASH
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 3
+            WriteCapacityUnits: 3
           Projection:
             ProjectionType: 'ALL'
       ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
