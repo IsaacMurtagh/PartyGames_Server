@@ -33,7 +33,7 @@ describe('onDisconnectFunction', () => {
     });
   });
 
-  it('Message is broadcast on disconnect', async () => {
+  it.only('Message is broadcast on disconnect', async () => {
     const spy = sinon.spy();
     AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
       spy(JSON.parse(params.Data));
@@ -59,8 +59,8 @@ describe('onDisconnectFunction', () => {
       data: { alias: userTwo.alias }
     }
 
-    expect(spy.calledTwice).toBeTruthy();
     expect(spy.calledWith(expectedResponse)).toBeTruthy();
+    expect(spy.calledTwice).toBeTruthy();
     AwsMock.restore();
   });
 });

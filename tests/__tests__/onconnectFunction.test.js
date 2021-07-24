@@ -50,7 +50,7 @@ describe('onConnectFunction', () => {
     AwsMock.restore();
   });
 
-  it('User is broadcasted with message when another user joins', async () => {
+  it.only('User is broadcasted with message when another user joins', async () => {
     const spy = sinon.spy();
     AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
       spy(JSON.parse(params.Data));
@@ -78,7 +78,8 @@ describe('onConnectFunction', () => {
       message: 'PLAYER_JOINED',
       data: { 
         alias: userTwo.alias,
-        displayName: 'pokemon man', 
+        displayName: 'pokemon man',
+        active: true,
       }
     }
     expect(spy.calledOnce).toBeTruthy();

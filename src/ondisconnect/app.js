@@ -26,7 +26,6 @@ exports.handler = async function(event, context) {
   try {
     return serializeResponse(await handle.bind(require('./handlers/onDisconnect'))(event, context));
   } catch(err) {
-    console.log(err.statusCode);
     if (err.statusCode) {
       const { statusCode, message } = err;
       return serializeResponse({ body: { message }, statusCode });

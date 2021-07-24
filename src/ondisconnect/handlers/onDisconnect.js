@@ -22,7 +22,7 @@ async function onDisconnect(event) {
   const socketManager = new SocketManager(event.requestContext);
   await socketManager.postToAllConnections({ 
     connections, 
-    data: participant.toApiResponse(),
+    data: { alias: participant.alias },
     message: 'PLAYER_LEFT',
   });  
 

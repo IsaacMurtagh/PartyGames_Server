@@ -50,7 +50,7 @@ describe('gameFunction', () => {
 
       const getGameResponse = await steps.getGameById(gameId);
       expect(getGameResponse.body.participants).toEqual([
-        { alias: user.alias, displayName, },
+        { alias: user.alias, displayName, active: true },
       ]);
     });
   });

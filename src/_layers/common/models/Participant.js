@@ -1,6 +1,5 @@
 'use strict';
 const moment = require('moment');
-const { aliasGenerator } = require('../utils/randomGenerator');
 
 class Participant {
 
@@ -48,6 +47,7 @@ class Participant {
     return {
       displayName: this.displayName,
       alias: this.alias,
+      active: this.active,
     }
   }
 }
