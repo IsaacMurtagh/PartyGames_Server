@@ -12,11 +12,13 @@ class Game {
     this.type = props.type;
     this.allowNicknames = props.allowNicknames;
     this.participants = props.participants;
+    this.status = props.status;
   }
 
   static fromCreate(props) {
     return new Game({
       ...props,
+      status: 'new',
       participants: [],
       allowNicknames: props.allowNicknames || true,
       createdAt: moment(),

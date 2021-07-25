@@ -25,9 +25,11 @@ describe('startGame', () => {
 
     const expectedResponse = {
       message: 'GAME_STARTED',
-      data: { gameId: game.id },
+      data: {
+        ...game,
+        status: 'inprogress',
+      },
     }
-
     expect(spy.calledOnce).toBeTruthy();
     expect(spy.calledWith(expectedResponse)).toBeTruthy();
     AwsMock.restore();

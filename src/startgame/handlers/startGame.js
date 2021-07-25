@@ -1,5 +1,6 @@
 const { 
   connectionsTable, 
+  gamesTable, 
   SocketManager, 
 } = require('../layerDeps');
 
@@ -9,19 +10,26 @@ async function startGame(event) {
   const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
 
   if (!connection) {
-    return { message: 'Connection not found' };
+    throw new Error('Invalid connection');
   }
 
-  const connections = await connectionsTable.getAllConnectionsForGame(connection.gameId);
+  const [ game, connections ] = await Promise.all([
+    gamesTable.getGameById(connection.gameId),
+    connectionsTable.getAllConnectionsForGame(connection.gameId),
+  ]);
+  game.status = 'inprogress';
 
   const socketManager = new SocketManager(event.requestContext);
-  await socketManager.postToAllConnections({ 
-    connections, 
-    data: { gameId: connection.gameId },
-    message: 'GAME_STARTED',
-  });  
+  await Promise.all([
+    socketManager.postToAllConnections({ 
+      connections, 
+      data: game.toApiResponse(),
+      message: 'GAME_STARTED',
+    }),
+    gamesTable.createGame(game)
+  ]);
 
-  return connection.toApiResponse();
+  return game;
 }
 
 module.exports = {
