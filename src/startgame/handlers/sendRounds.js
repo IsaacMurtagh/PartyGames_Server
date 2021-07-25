@@ -1,6 +1,8 @@
 const { 
   connectionsTable, 
   SocketManager, 
+  gamesTable,
+  Round,
 } = require('../layerDeps');
 
 async function timeout(ms) {
@@ -9,20 +11,25 @@ async function timeout(ms) {
   })
 }
 
-async function sendRounds({ game, event}) {
-  const connections = await connectionsTable.getAllConnectionsForGame(game.id);
-  const socketManager = new SocketManager(event.requestContext);
-  const numRounds = 5;
-  let i = 0;
+async function newRound({ gameId, roundNumber, socketManager}) {
+  const connections = await connectionsTable.getAllConnectionsForGame(gameId);
+  const round = Round.fromCreate({ gameId, round: roundNumber });
+  await gamesTable.create(round);
 
-  while (i < numRounds) {
+  return socketManager.postToAllConnections({ 
+    connections,
+    data: round.toApiResponse(),
+    message: 'NEW_ROUND',
+  });
+}
+
+async function sendRounds({ game, event}) {
+  const socketManager = new SocketManager(event.requestContext);
+  let i = 0;
+  while (i < game.numberRounds) {
     await Promise.all([
-      socketManager.postToAllConnections({ 
-        connections, 
-        data: game.toApiResponse(),
-        message: 'NEW_ROUND',
-      }),
-      timeout(10000)
+      newRound({ gameId: game.id, socketManager, roundNumber: i }),
+      timeout(game.roundTimeMs)
     ]);
     i++;
   }

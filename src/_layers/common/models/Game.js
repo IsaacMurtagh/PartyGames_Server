@@ -13,6 +13,8 @@ class Game {
     this.allowNicknames = props.allowNicknames;
     this.participants = props.participants;
     this.status = props.status;
+    this.numberRounds = props.numberRounds;
+    this.roundTimeSeconds = props.roundTimeSeconds;
   }
 
   static fromCreate(props) {
@@ -21,6 +23,8 @@ class Game {
       status: 'new',
       participants: [],
       allowNicknames: props.allowNicknames || true,
+      roundTimeSeconds: props.roundTimeSeconds || 10,
+      numberRounds: props.numberRounds || 5,
       createdAt: moment(),
       updatedAt: moment(),
       id: uuid(),
@@ -33,6 +37,10 @@ class Game {
       createdAt: moment(doc.createdAt),
       updatedAt: moment(doc.updatedAt),
     })
+  }
+
+  get roundTimeMs() {
+    return this.roundTimeSeconds * 1000
   }
 
   toDocument() {

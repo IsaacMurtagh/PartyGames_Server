@@ -17,6 +17,8 @@ describe('startGame', () => {
       userId: user.id,
       name: 'Pokemon Lobby',
       type: 'WouldYouRather',
+      numberRounds: 1,
+      roundTimeSeconds: 1,
     })).body;
 
     const connectionId = uuid();
@@ -30,8 +32,8 @@ describe('startGame', () => {
         status: 'inprogress',
       },
     }
-    expect(spy.calledOnce).toBeTruthy();
+    expect(spy.calledTwice).toBeTruthy();
     expect(spy.calledWith(expectedResponse)).toBeTruthy();
     AwsMock.restore();
-  }, 20000);
+  });
 });

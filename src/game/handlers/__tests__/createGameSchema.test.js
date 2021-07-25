@@ -5,6 +5,8 @@ const validBody = {
   type: 'WouldYouRather',
   allowNicknames: false,
   userId: '50b2a70e-283c-4db5-b056-d69ee34702ee',
+  roundTimeSeconds: 10,
+  numberRounds: 5,
 }
 
 describe('createGame Schema', () => {
@@ -37,6 +39,34 @@ describe('createGame Schema', () => {
     expect(schema.validate({
       ...validBody,
       UserId: '0000001'
+    }).error).toBeDefined();
+  })
+
+  it('too low roundNumberSeconds', () => {
+    expect(schema.validate({
+      ...validBody,
+      roundTimeSeconds: 0,
+    }).error).toBeDefined();
+  })
+
+  it('too high roundNumberSeconds', () => {
+    expect(schema.validate({
+      ...validBody,
+      roundTimeSeconds: 35,
+    }).error).toBeDefined();
+  })
+
+  it('too high numberRounds', () => {
+    expect(schema.validate({
+      ...validBody,
+      numberRounds: 11,
+    }).error).toBeDefined();
+  })
+
+  it('too low numberRounds', () => {
+    expect(schema.validate({
+      ...validBody,
+      numberRounds: 0,
     }).error).toBeDefined();
   })
 })

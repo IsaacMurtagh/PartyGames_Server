@@ -4,7 +4,6 @@ const {
   SocketManager, 
 } = require('../layerDeps');
 
-
 async function startGame(event) {
   const connectionId = event.requestContext.connectionId
   const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
@@ -26,7 +25,7 @@ async function startGame(event) {
       data: game.toApiResponse(),
       message: 'GAME_STARTED',
     }),
-    gamesTable.createGame(game)
+    gamesTable.create(game)
   ]);
 
   return game;
