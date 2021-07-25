@@ -216,6 +216,7 @@ Resources:
       CodeUri: src/startGame
       Handler: app.handler
       MemorySize: 256
+      Timeout: 100
       Runtime: nodejs12.x
       Layers:
         - Ref: CommonLayer
@@ -322,8 +323,8 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 3
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -345,8 +346,8 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 3
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -375,13 +376,13 @@ Resources:
           - AttributeName: connectionId
             KeyType: HASH
           ProvisionedThroughput:
-            ReadCapacityUnits: 3
-            WriteCapacityUnits: 3
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
           Projection:
             ProjectionType: 'ALL'
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 3
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 

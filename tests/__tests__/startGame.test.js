@@ -33,5 +33,5 @@ describe('startGame', () => {
     expect(spy.calledOnce).toBeTruthy();
     expect(spy.calledWith(expectedResponse)).toBeTruthy();
     AwsMock.restore();
-  });
+  }, 20000);
 });
