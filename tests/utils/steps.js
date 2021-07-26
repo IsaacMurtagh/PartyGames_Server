@@ -93,7 +93,7 @@ async function startGameFromWss({ connectionId }) {
       connectionId,
     }
   });
-  return await startGame(event);
+  return formatResponse(await startGame(event));
 };
 
 

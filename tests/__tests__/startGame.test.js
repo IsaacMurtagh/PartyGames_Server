@@ -25,15 +25,54 @@ describe('startGame', () => {
     await steps.connectToWss({ gameId: game.id, userId: user.id, connectionId });
     await steps.startGameFromWss({ connectionId });
 
-    const expectedResponse = {
+    const expectedGameStarted = {
       message: 'GAME_STARTED',
       data: {
         ...game,
         status: 'inprogress',
       },
     }
-    expect(spy.calledTwice).toBeTruthy();
-    expect(spy.calledWith(expectedResponse)).toBeTruthy();
+    const expectedGameFinished = {
+      message: 'GAME_FINISHED',
+      data: {
+        ...game,
+        status: 'finished',
+      },
+    }
+    expect(spy.calledThrice).toBeTruthy();
+    expect(spy.calledWith(expectedGameStarted)).toBeTruthy();
+    expect(spy.calledWith(expectedGameFinished)).toBeTruthy();
     AwsMock.restore();
   });
+
+  it('cannot start game if it has already been started', async () => {
+    const spy = sinon.spy();
+    AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
+      spy(JSON.parse(params.Data));
+      callback();
+    });
+
+    const user = (await steps.createAUser()).body;
+    const game = (await steps.createAGame({ 
+      userId: user.id,
+      name: 'Pokemon Lobby',
+      type: 'WouldYouRather',
+      numberRounds: 1,
+      roundTimeSeconds: 1,
+    })).body;
+
+    const connectionId = uuid();
+    await steps.connectToWss({ gameId: game.id, userId: user.id, connectionId });
+    await steps.startGameFromWss({ connectionId });
+
+    expect(spy.calledThrice).toBeTruthy();
+
+    const startGameResponse = await steps.startGameFromWss({ connectionId });
+    expect(startGameResponse).toEqual({
+      statusCode: 400,
+      body: { message: 'GAME_ALREADY_STARTED' },
+    })
+    AwsMock.restore();
+
+  })
 });

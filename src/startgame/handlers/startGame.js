@@ -3,19 +3,24 @@ const {
   gamesTable, 
   SocketManager, 
 } = require('../layerDeps');
+const createError = require('http-errors');
 
 async function startGame(event) {
   const connectionId = event.requestContext.connectionId
   const connection = await connectionsTable.getConnectionByConnectionId(connectionId);
 
   if (!connection) {
-    throw new Error('Invalid connection');
+    throw createError.Forbidden('INVALID_CONNECTION');
   }
 
   const [ game, connections ] = await Promise.all([
     gamesTable.getGameById(connection.gameId),
     connectionsTable.getAllConnectionsForGame(connection.gameId),
   ]);
+
+  if (game.status != 'new') {
+    throw createError.BadRequest('GAME_ALREADY_STARTED');
+  }
   game.status = 'inprogress';
 
   const socketManager = new SocketManager(event.requestContext);

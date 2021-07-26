@@ -28,7 +28,7 @@ async function sendRounds({ game, event}) {
   let i = 0;
   while (i < game.numberRounds) {
     await Promise.all([
-      newRound({ gameId: game.id, socketManager, roundNumber: i }),
+      newRound({ gameId: game.id, socketManager, roundNumber: (i + 1) }),
       timeout(game.roundTimeMs)
     ]);
     i++;
