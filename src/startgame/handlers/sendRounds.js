@@ -13,7 +13,7 @@ async function timeout(ms) {
 
 async function newRound({ gameId, roundNumber, socketManager}) {
   const connections = await connectionsTable.getAllConnectionsForGame(gameId);
-  const round = Round.fromCreate({ gameId, round: roundNumber });
+  const round = Round.fromCreate({ gameId, roundNumber });
   await gamesTable.create(round);
 
   return socketManager.postToAllConnections({ 
