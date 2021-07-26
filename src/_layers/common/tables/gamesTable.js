@@ -6,13 +6,13 @@ class GamesTable {
     this.name = process.env.GAMES_TABLE_NAME;
   }
 
-  async createGame(game) {
+  async create(doc) {
     return dbClient.put({
       TableName: this.name,
-      Item: game.toDocument(),
+      Item: doc.toDocument(),
     }).promise()
     .then(() => {
-      return game;
+      return doc;
     });
   }
 

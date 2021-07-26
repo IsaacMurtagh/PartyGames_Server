@@ -3,6 +3,7 @@ const userFunction = require('../../src/user/app').handler;
 const gameFunction = require('../../src/game/app').handler;
 const onConnectFunction = require('../../src/onConnect/app').handler;
 const onDisconnectFunction = require('../../src/onDisconnect/app').handler;
+const startGame = require('../../src/startGame/app').handler;
 
 function formatResponse(response, removeHeaders=true) {
   try {
@@ -86,6 +87,15 @@ async function disconnectFromWss({ connectionId }) {
   return formatResponse(await onDisconnectFunction(event));
 };
 
+async function startGameFromWss({ connectionId }) {
+  const event = generateEvent({
+    requestContext: {
+      connectionId,
+    }
+  });
+  return await startGame(event);
+};
+
 
 
 
@@ -97,4 +107,5 @@ module.exports = {
   joinAGame,
   connectToWss,
   disconnectFromWss,
+  startGameFromWss,
 }
