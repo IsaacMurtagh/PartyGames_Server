@@ -9,6 +9,9 @@ async function getGame(event, context) {
   }
 
   game.participants = await gamesTable.getAllParticipants(gameId);
+  if (game.isFinished) {
+    game.summary = await gamesTable.getGameSummary(gameId)
+  }
   return game.toApiResponse();
 };
 

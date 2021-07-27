@@ -15,6 +15,7 @@ class Game {
     this.status = props.status;
     this.numberRounds = props.numberRounds;
     this.roundTimeSeconds = props.roundTimeSeconds;
+    this.summary = props.summary;
   }
 
   static fromCreate(props) {
@@ -47,6 +48,10 @@ class Game {
     return this.status == 'inprogress';
   }
 
+  get isFinished() {
+    return this.status == 'finished';
+  }
+
   toDocument() {
     return {
       ...this,
@@ -54,6 +59,8 @@ class Game {
       sk: '#UniqueConstraint',
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
+      summary: undefined,
+      participants: undefined,
     }
   }
 
@@ -61,6 +68,7 @@ class Game {
     return {
       ...this,
       participants: this.participants.map(p => p.toApiResponse()),
+      summary: this.summary && this.summary.toApiResponse(),
     }
   }
 }

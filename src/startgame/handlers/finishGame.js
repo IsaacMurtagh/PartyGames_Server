@@ -5,11 +5,13 @@ const {
 } = require('../layerDeps');
 
 async function finishGame({ event, gameId }) {
-  const [ game, connections ] = await Promise.all([
+  const [ game, connections, participants ] = await Promise.all([
     gamesTable.getGameById(gameId),
     connectionsTable.getAllConnectionsForGame(gameId),
+    gamesTable.getAllParticipants(gameId),
   ]);
   game.status = 'finished';
+  game.participants = participants;
 
   const socketManager = new SocketManager(event.requestContext);
   await Promise.all([

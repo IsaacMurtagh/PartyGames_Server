@@ -2,6 +2,7 @@ const dbClient = require('../dbClient');
 const Game = require('../models/Game');
 const Participant = require('../models/Participant');
 const Round = require('../models/Round');
+const GameSummary = require('../models/GameSummary');
 class GamesTable {
   constructor() {
     this.name = process.env.GAMES_TABLE_NAME;
@@ -90,6 +91,20 @@ class GamesTable {
     }).promise()
     .then(result => {
       return result.Item ? Round.fromDocument(result.Item) : undefined;
+    });
+  }
+
+  async getGameSummary(gameId) {
+    return dbClient.query({
+      TableName: this.name,
+      ExpressionAttributeValues: {
+        ':pk': `Game#${gameId}`,
+        ':sk': 'Round#'
+      },
+      KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)'
+    }).promise()
+    .then(result => {
+      return result.Items ? GameSummary.fromDocuments(result.Items) : undefined;
     });
   }
 }

@@ -30,6 +30,7 @@ describe('startGame', () => {
       data: {
         ...game,
         status: 'inprogress',
+        participants: [{ alias: user.alias, active: true }]
       },
     }
     const expectedGameFinished = {
@@ -37,6 +38,7 @@ describe('startGame', () => {
       data: {
         ...game,
         status: 'finished',
+        participants: [{ alias: user.alias, active: true }]
       },
     }
     expect(spy.calledThrice).toBeTruthy();
@@ -73,6 +75,5 @@ describe('startGame', () => {
       body: { message: 'GAME_ALREADY_STARTED' },
     })
     AwsMock.restore();
-
   })
 });

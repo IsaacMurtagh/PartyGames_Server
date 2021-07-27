@@ -13,10 +13,13 @@ async function startGame(event) {
     throw createError.Forbidden('INVALID_CONNECTION');
   }
 
-  const [ game, connections ] = await Promise.all([
-    gamesTable.getGameById(connection.gameId),
-    connectionsTable.getAllConnectionsForGame(connection.gameId),
+  const { gameId } = connection;
+  const [ game, connections, participants ] = await Promise.all([
+    gamesTable.getGameById(gameId),
+    connectionsTable.getAllConnectionsForGame(gameId),
+    gamesTable.getAllParticipants(gameId),
   ]);
+  game.participants = participants;
 
   if (game.status != 'new') {
     throw createError.BadRequest('GAME_ALREADY_STARTED');
@@ -26,7 +29,7 @@ async function startGame(event) {
   const socketManager = new SocketManager(event.requestContext);
   await Promise.all([
     socketManager.postToAllConnections({ 
-      connections, 
+      connections,
       data: game.toApiResponse(),
       message: 'GAME_STARTED',
     }),

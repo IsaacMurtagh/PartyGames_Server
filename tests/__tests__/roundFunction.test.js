@@ -15,7 +15,7 @@ function getGameBody(userId, overrides = {}) {
   }
 }
 
-describe('startGame', () => {
+describe('game round', () => {
 
   it('Submit choice for game', async () => {
     const spy = sinon.spy();

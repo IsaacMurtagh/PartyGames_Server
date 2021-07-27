@@ -20,7 +20,6 @@ async function makeChoice(event, context) {
   if (!game) throw createError.Forbidden('INVALID_GAME_ID');
   if (!game.inProgress) throw createError.Forbidden('GAME_NOT_IN_PROGRESS');
   if (!round) throw createError.Forbidden('INVALID_GAME_ROUND');
-  console.log(round);
   if (!round.choices.find(choice => choice.id == choiceId )) {
     throw createError.BadRequest('INVALID_ROUND_CHOICE');
   }
