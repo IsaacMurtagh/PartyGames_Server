@@ -20,16 +20,16 @@ async function handle(event, context) {
     throw createError.BadRequest(err.message);
   }
   const body = await this.handler(event, context);
-  return { body, statusCode: 200 };
+  return serializeResponse({ body, statusCode: 200 });
 }
 
 exports.handler = async (event, context) => {
   try {
     switch (event.httpMethod) {
       case 'GET':
-        return serializeResponse(await handle.bind(require('./handlers/getGame'))(event, context));
+        return await handle.bind(require('./handlers/getGame'))(event, context);
       case 'POST':
-        return serializeResponse(await handle.bind(require('./handlers/createGame'))(event, context));
+        return await handle.bind(require('./handlers/createGame'))(event, context);
     }
   } catch(err) {
     if (err.statusCode) {

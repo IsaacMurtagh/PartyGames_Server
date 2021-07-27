@@ -15,7 +15,6 @@ function serializeResponse({ body, statusCode }) {
 
 async function handle(event, context) {
   try {
-    console.log(event);
     this.schema && await this.schema.validateAsync(JSON.parse(event.body));
   } catch(err) {
     throw createError.BadRequest(err.message);

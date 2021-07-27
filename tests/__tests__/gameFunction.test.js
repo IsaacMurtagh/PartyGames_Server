@@ -1,5 +1,19 @@
 const steps = require('../utils/steps');
 const uuid = require('uuid');
+const timeout = require('../utils/timeout');
+const AwsMock = require('aws-sdk-mock');
+const sinon = require('sinon');
+
+function getGameBody(userId, overrides = {}) {
+  return {
+    userId,
+    name: 'Pokemon Lobby',
+    type: 'WouldYouRather',
+    numberRounds: 1,
+    roundTimeSeconds: 1,
+    ...overrides
+  }
+}
 
 describe('gameFunction', () => {
 
@@ -59,5 +73,43 @@ describe('gameFunction', () => {
         { alias: user.alias, displayName, active: false },
       ]);
     });
+
+    it('Once game is finished, game summary is returned', async () => {
+      const spy = sinon.spy();
+      AwsMock.mock('ApiGatewayManagementApi', 'postToConnection', (params, callback) =>  {
+        console.log(params);
+        spy(JSON.parse(params.Data));
+        callback();
+      });
+
+      const user = (await steps.createAUser()).body;
+      const game = (await steps.createAGame(getGameBody(user.id))).body;
+      
+      const connectionId = uuid();
+      const displayName = 'joey';
+      await steps.connectToWss({ gameId: game.id, userId: user.id, connectionId, displayName });
+      await Promise.all([
+        steps.startGameFromWss({ connectionId }),
+        (async () => {
+          await timeout(500);
+          return steps.makeChoice({ 
+            gameId: game.id,
+            roundNumber: '1',
+            body: {
+              userId: user.id,
+              choiceId: 0,
+            }
+          })
+        })()
+      ]);
+
+      const getGameResponse = await steps.getGameById(game.id);
+
+      expect(spy.calledThrice).toBeTruthy();
+      console.log(getGameResponse);
+      expect(getGameResponse.statusCode).toEqual(200);
+      expect(getGameResponse.body.summary?.results.length).toEqual(1);
+      AwsMock.restore();
+    })
   });
 });
