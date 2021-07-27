@@ -43,6 +43,10 @@ class Game {
     return this.roundTimeSeconds * 1000
   }
 
+  get inProgress() {
+    return this.status == 'inprogress';
+  }
+
   toDocument() {
     return {
       ...this,

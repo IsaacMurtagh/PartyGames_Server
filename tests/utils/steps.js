@@ -3,7 +3,8 @@ const userFunction = require('../../src/user/app').handler;
 const gameFunction = require('../../src/game/app').handler;
 const onConnectFunction = require('../../src/onConnect/app').handler;
 const onDisconnectFunction = require('../../src/onDisconnect/app').handler;
-const startGame = require('../../src/startGame/app').handler;
+const startGameFunction = require('../../src/startGame/app').handler;
+const roundFunction = require('../../src/round/app').handler;
 
 function formatResponse(response, removeHeaders=true) {
   try {
@@ -52,18 +53,6 @@ async function getGameById(gameId) {
   return formatResponse(await gameFunction(event));
 };
 
-async function joinAGame({ gameId, body }) {
-  const event = generateEvent({
-    path: `/games/${gameId}/join`,
-    httpMethod: 'POST',
-    pathParameters: {
-      gameId,
-    },
-    body,
-  });
-  return formatResponse(await gameFunction(event));
-};
-
 async function connectToWss({ gameId, userId, connectionId, displayName }) {
   const event = generateEvent({
     queryStringParameters: {
@@ -93,9 +82,21 @@ async function startGameFromWss({ connectionId }) {
       connectionId,
     }
   });
-  return formatResponse(await startGame(event));
+  return formatResponse(await startGameFunction(event));
 };
 
+async function makeChoice({ gameId, body, roundNumber }) {
+  const event = generateEvent({
+    path: `/games/${gameId}/round/${roundNumber}`,
+    httpMethod: 'POST',
+    pathParameters: {
+      gameId,
+      roundNumber,
+    },
+    body,
+  });
+  return formatResponse(await roundFunction(event));
+};
 
 
 
@@ -104,8 +105,8 @@ module.exports = {
   getUserById,
   createAGame,
   getGameById,
-  joinAGame,
   connectToWss,
   disconnectFromWss,
   startGameFromWss,
+  makeChoice
 }

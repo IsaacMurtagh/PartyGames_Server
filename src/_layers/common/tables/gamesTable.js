@@ -1,6 +1,7 @@
 const dbClient = require('../dbClient');
 const Game = require('../models/Game');
 const Participant = require('../models/Participant');
+const Round = require('../models/Round');
 class GamesTable {
   constructor() {
     this.name = process.env.GAMES_TABLE_NAME;
@@ -63,6 +64,32 @@ class GamesTable {
     }).promise()
     .then(result => {
       return result.Items ? result.Items.map(item => Participant.fromDocument(item)) : [];
+    });
+  }
+
+  async getGameRound({ gameId, roundNumber }) {
+    return dbClient.get({
+      TableName: this.name,
+      Key: { 
+        pk: `Game#${gameId}`,
+        sk: `Round#${roundNumber}`,
+      }
+    }).promise()
+    .then(result => {
+      return result.Item ? Round.fromDocument(result.Item) : undefined;
+    });
+  }
+
+  async makeChoiceForRound({ round, choiceId }) {
+    return dbClient.get({
+      TableName: this.name,
+      Key: { 
+        pk: `Game#${round.gameId}`,
+        sk: `Round#${round.roundNumber}#`,
+      }
+    }).promise()
+    .then(result => {
+      return result.Item ? Round.fromDocument(result.Item) : undefined;
     });
   }
 }

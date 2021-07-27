@@ -18,7 +18,7 @@ class Round {
 
   constructor(props) {
     this.gameId = props.gameId;
-    this.round = props.round;
+    this.roundNumber = props.roundNumber;
     this.choices = props.choices;
     this.createdAt = props.createdAt;
   }
@@ -27,7 +27,7 @@ class Round {
     return new Round({
       gameId: props.gameId,
       createdAt: moment(),
-      round: props.round,
+      roundNumber: props.roundNumber,
       choices: Array(2).fill(0).map((_, i) => {
         return Choice.generateChoice(i);
       }),
@@ -37,7 +37,7 @@ class Round {
   static fromDocument(doc) {
     return new Round({
       ...doc,
-      choices: doc.choices.map(new Choice),
+      choices: doc.choices.map(choice => new Choice(choice)),
       createdAt: moment(doc.createdAt),
     })
   }
@@ -46,7 +46,7 @@ class Round {
     return {
       ...this,
       pk: `Game#${this.gameId}`,
-      sk: `Round#${this.round}`,
+      sk: `Round#${this.roundNumber}`,
       createdAt: this.createdAt.toISOString(),
     }
   }

@@ -303,6 +303,26 @@ Resources:
             Path: /users
             Method: post
   
+  RoundFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/round
+      Handler: app.handler
+      Layers:
+        - Ref: CommonLayer
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", usersTable ]
+        - DynamoDBCrudPolicy:
+            TableName: !FindInMap [ EnvironmentMap, !Ref "Environment", gamesTable ]
+      Events:
+        MakeRoundChoiceApi:
+          Type: Api
+          Properties:
+            RestApiId: 
+              Ref: 'RestApiGateway'
+            Path: /games/{gameId}/round/{roundNumber}
+            Method: post
 
   # -- DATABASE TABLES --
   GamesTable:

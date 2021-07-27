@@ -1,5 +1,5 @@
 {
-  "name": "start_game_function",
+  "name": "round_function",
   "version": "1.0.0",
   "main": "app.js",
   "repository": "https://github.com/IsaacMurtagh/PartyGames_Server",

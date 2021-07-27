@@ -14,5 +14,4 @@ async function getGame(event, context) {
 
 module.exports = {
   handler: getGame,
-  validation: 'hello boss',
 };
